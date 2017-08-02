@@ -4,6 +4,7 @@ import * as BooksAPI from './BooksAPI'
 
 class HomePage extends Component {
   render() {
+    console.log('homeprops: ',this.props.books)
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -11,16 +12,15 @@ class HomePage extends Component {
         </div>
         <div className="list-books-content">
           <div>
-              {this.props.books.map( (bookshelf) => (
-                <div className="bookshelf" key= {bookshelf.id}>
-                  <h2 className="bookshelf-title">{bookshelf.bookshelfTitle}</h2>
+            {this.props.books.map( (book) => (
+                <div className="bookshelf" key= {book.id}>
+                  <h2 className="bookshelf-title">{book.shelf}</h2>
                     <div className="bookshelf-books">
                       <ol className="books-grid">
-                        {bookshelf.books.map( (book) => (
                           <li key = {book.id}>
                             <div className="book">
                               <div className="book-top">
-                                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.image})` }}></div>
+                                <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
                                 <div className="book-shelf-changer">
                                   <select>
                                     <option value="none" disabled>Move to...</option>
@@ -35,7 +35,6 @@ class HomePage extends Component {
                               <div className="book-authors">{book.authors}</div>
                             </div>
                           </li>
-                        ))}
                       </ol>
                     </div>
                 </div>
