@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import sortBy from 'sort-by'
 import * as BooksAPI from './BooksAPI'
 
 class HomePage extends Component {
   render() {
-    console.log('homeprops: ',this.props.books)
     return (
       <div className="list-books">
         <div className="list-books-title">

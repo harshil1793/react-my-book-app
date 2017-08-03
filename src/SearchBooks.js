@@ -1,9 +1,45 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import escapeRegExp from 'escape-string-regexp'
+import sortBy from 'sort-by'
+import PropTypes from 'prop-types'
 import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
+  static propTypes = {
+    books: PropTypes.array.isRequired
+  }
+
+  state = {
+    books: [],
+     query:''
+  }
+  
+  updateQuery = (query) => {
+      this.setState({ query: query.trim() })
+      BooksAPI.search(query, 10).then( (books) =>{
+        this.setState({ books:books })
+      })
+        console.log(this.state.query);
+  }
+
   render() {
+    console.log('searchquery: ', this.state.newbooks)
+    const { books } = this.state
+    const { query } = this.state
+
+    let showingBooks,tempBooks
+    if(query) {
+      const match = new RegExp(escapeRegExp(query), 'i')
+      tempBooks = books.filter( (book) => match.test(book.title))
+      if(tempBooks.length>0) {
+        showingBooks = books.filter( (book) => match.test(book.title))
+        showingBooks.sort(sortBy('title'))
+      }
+    }
+    else{
+          showingBooks = books
+    }
     return (
       <div className="search-books">
           <div className="search-books-bar">
@@ -17,13 +53,17 @@ class SearchBooks extends Component {
                 However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                 you don't find a specific author or title. Every search is limited by search terms.
               */}
-              <input type="text" placeholder="Search by title or author"/>
-
+              <input
+                type="text"
+                placeholder="Search by title or author"
+                value={this.state.query}
+                onChange={(event) => this.updateQuery(event.target.value)}/>
             </div>
           </div>
+          {showingBooks != undefined && (
           <div className="search-books-results">
             <ol className="books-grid">
-              {this.props.books.map( (book) =>(
+              {showingBooks.map( (book) =>(
                 <li key={book.id}>
                   <div>
                       <div className="book">
@@ -41,7 +81,7 @@ class SearchBooks extends Component {
                         </div>
                         <div className="book-title">{book.title}</div>
                         <div className="book-authors">
-
+                          {book.authors}
                         </div>
                       </div>
                   </div>
@@ -49,6 +89,7 @@ class SearchBooks extends Component {
               ))}
             </ol>
           </div>
+        )}
         </div>
     )
   }
