@@ -3,8 +3,23 @@ import { Link } from 'react-router-dom'
 import sortBy from 'sort-by'
 import * as BooksAPI from './BooksAPI'
 
-class HomePage extends Component {
+
+class BookShelf extends Component {
   render() {
+
+  }
+}
+class HomePage extends Component {
+  state : {
+    bookShelf: [],
+    shelf : 'currentlyReading'
+  }
+  componentDidMount(){
+    // this.state.bookShelf.concat(this.props)
+  }
+  render() {
+    const currentlyReading  = this.props.books.filter(books => books.shelf == 'read')
+    console.log('props:' , currentlyReading)
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -12,11 +27,11 @@ class HomePage extends Component {
         </div>
         <div className="list-books-content">
           <div>
-            {this.props.books.map( (book) => (
-                <div className="bookshelf" key= {book.id}>
-                  <h2 className="bookshelf-title">{book.shelf}</h2>
+              <div className="bookshelf">
+                <h2 className="bookshelf-title">Currently Reading</h2>
                     <div className="bookshelf-books">
                       <ol className="books-grid">
+                        {currentlyReading.map( (book) => (
                           <li key = {book.id}>
                             <div className="book">
                               <div className="book-top">
@@ -35,10 +50,10 @@ class HomePage extends Component {
                               <div className="book-authors">{book.authors}</div>
                             </div>
                           </li>
+                          ))}
                       </ol>
                     </div>
                 </div>
-              ))}
           </div>
         </div>
         <div className="open-search">
