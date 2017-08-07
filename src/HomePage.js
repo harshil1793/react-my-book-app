@@ -52,7 +52,7 @@ class HomePage extends Component {
   }
   change = (shelf, book) => {
       BooksAPI.update(book, shelf).then(
-      this.setState({ value: value, id: id})
+      this.setState({ value: book, id: shelf})
         )
     }
   render() {
@@ -61,7 +61,7 @@ class HomePage extends Component {
     const currentlyReading = books.filter(books => books.shelf === 'currentlyReading')
     const wantToRead = books.filter(books => books.shelf === 'wantToRead')
     const read = books.filter(books => books.shelf === 'read')
-    
+
     return (
       <div className="list-books">
         <div className="list-books-title">
