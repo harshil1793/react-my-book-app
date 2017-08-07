@@ -1,21 +1,27 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import sortBy from 'sort-by'
 import * as BooksAPI from './BooksAPI'
 
-
 class BookShelf extends Component {
+  state= {
+    shelfStatus: ''
+  }
+  // change(event){
+  //        this.setState({value: event.target.value});
+  //    }
   render() {
     const bookShelf = this.props.bookShelf
-    console.log('shelfffff', bookShelf)
+
     return <ol className="books-grid">
       {bookShelf.map( (book) => (
-        <li key = {book.id}>
+        <li key={book.id}>
           <div className="book">
             <div className="book-top">
               <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
               <div className="book-shelf-changer">
-                <select>
+                <select id="lang" onChange={(event) => (
+                    this.props.change(event.target.value, book.id)
+                  )} value={book.shelf}>
                   <option value="none" disabled>Move to...</option>
                   <option value="currentlyReading">Currently Reading</option>
                   <option value="wantToRead">Want to Read</option>
@@ -32,19 +38,30 @@ class BookShelf extends Component {
     </ol>
   }
 }
+
 class HomePage extends Component {
-  state : {
-    bookShelf: [],
-    shelf : 'currentlyReading'
+  state = {
+    value: '',
+    id: '',
+    booksh: []
   }
   componentDidMount(){
-    // this.state.bookShelf.concat(this.props)
+    BooksAPI.getAll().then( (booksh) =>{
+      this.setState({ booksh })
+    })
   }
+  change = (shelf, book) => {
+      BooksAPI.update(book, shelf).then(
+      this.setState({ value: value, id: id})
+        )
+    }
   render() {
-    const currentlyReading  = this.props.books.filter(books => books.shelf == 'currentlyReading')
-    const wantToRead  = this.props.books.filter(books => books.shelf == 'wantToRead')
-    const read  = this.props.books.filter(books => books.shelf == 'read')
-    console.log('props:' , currentlyReading)
+    // this.state.booksh =this.props.books
+    const books = this.state.booksh
+    const currentlyReading = books.filter(books => books.shelf === 'currentlyReading')
+    const wantToRead = books.filter(books => books.shelf === 'wantToRead')
+    const read = books.filter(books => books.shelf === 'read')
+    
     return (
       <div className="list-books">
         <div className="list-books-title">
@@ -55,19 +72,19 @@ class HomePage extends Component {
               <div className="bookshelf">
                 <h2 className="bookshelf-title">Currently Reading</h2>
                 <div className="bookshelf-books">
-                  <BookShelf bookShelf={currentlyReading}/>
+                  <BookShelf bookShelf={currentlyReading} change={this.change}/>
                 </div>
               </div>
               <div className="bookshelf">
                 <h2 className="bookshelf-title">Want to Read</h2>
                 <div className="bookshelf-books">
-                  <BookShelf bookShelf={wantToRead}/>
+                  <BookShelf bookShelf={wantToRead} change={this.change}/>
                 </div>
               </div>
               <div className="bookshelf">
                 <h2 className="bookshelf-title">Read</h2>
                 <div className="bookshelf-books">
-                  <BookShelf bookShelf={read}/>
+                  <BookShelf bookShelf={read} change={this.change}/>
                 </div>
               </div>
           </div>
