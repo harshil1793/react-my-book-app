@@ -7,45 +7,71 @@ import * as BooksAPI from './BooksAPI'
 
 class SearchBooks extends Component {
   static propTypes = {
-    books: PropTypes.array.isRequired
+    // books: PropTypes.array.isRequired
   }
+
   state = {
     books: [],
-     query:''
+    query:'',
+    noResultFound : false
   }
 
   updateQuery = (query) => {
-      this.setState({ query: query.trim() })
+    this.setState({
+      query: query
+    });
+    if (query) {
       BooksAPI.search(query, 10).then( (books) =>{
         this.setState({ books:books })
       })
+      this.setState({
+        noResultFound : true
+      });
+    }
+  
+    else {
+      this.setState({
+        books: [],
+        noResultFound : false
+      });
+    }
   }
 
   render() {
     const { books } = this.state
     const { query } = this.state
+    let { noResultFound } = this.state
 
     let showingBooks
-    if(query && books.length >0) {
+    if(query && books.length > 0) {
       const match = new RegExp(escapeRegExp(query), 'i')
-        showingBooks = books.filter( (book) => match.test(book.title))
-        showingBooks.sort(sortBy('title'))
+      showingBooks = books.filter( (book) => match.test(book.title))
+      showingBooks.sort(sortBy('title'))
     }
     else{
-          showingBooks = []
+      showingBooks = []
     }
+
     return (
       <div className="search-books">
           <div className="search-books-bar">
             <Link to="/" className="close-search">Close</Link>
+            {/* 
+              SEARCH INPUT FIELD
+            */}
             <div className="search-books-input-wrapper">
               <input
                 type="text"
                 placeholder="Search by title or author"
                 value={this.state.query}
-                onChange={(event) => this.updateQuery(event.target.value)}/>
+                onChange={ event => this.updateQuery(event.target.value)}
+                autoFocus/>
             </div>
           </div>
+
+          {/*
+            RESULT OF BOOKS
+          */}
           {showingBooks !== undefined && (
           <div className="search-books-results">
             <ol className="books-grid">
@@ -56,7 +82,7 @@ class SearchBooks extends Component {
                         <div className="book-top">
                           <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
                           <div className="book-shelf-changer">
-                            <select value={book.shelf}>
+                            <select value={book.shelf} >
                               <option value="move" disabled>Move to...</option>
                               <option value="currentlyReading">Currently Reading</option>
                               <option value="wantToRead">Want to Read</option>
@@ -74,6 +100,14 @@ class SearchBooks extends Component {
                 </li>
               ))}
             </ol>
+          </div>
+        )}
+        {/*
+          NO RESULT FOUND
+        */}
+        {showingBooks.length === 0 && noResultFound === true && (
+          <div className="align-center">
+            <p> No Result found</p>
           </div>
         )}
         </div>
